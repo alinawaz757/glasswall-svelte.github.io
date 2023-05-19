@@ -17,7 +17,13 @@
 	let requestTypes = requestTYpesData;
 
 	$: {
+		resetStates(selectedValue);
 	}
+
+	const resetStates = () => {
+		replyQualityFormData = [];
+		tags = [];
+	};
 
 	onMount(async () => {
 		const { ChipsInput, initTE } = await import('tw-elements');
@@ -39,9 +45,21 @@
 
 	const hanldeSubmitClick = async () => {
 		isLoading = true;
+		let body;
+		if (tags.length) {
+			console.log('tags', tags);
+			body = JSON.stringify(tags);
+		}
+		if (replyQualityFormData.length) {
+			body = JSON.stringify(replyQualityFormData);
+		}
 		try {
 			const response = await fetch(routes[selectedValue.key].url, {
-				method: routes[selectedValue.key].method
+				method: routes[selectedValue.key].method,
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: !!body ? body : JSON.stringify({})
 			});
 			const data = await response.json();
 			apiResponse = data;
@@ -88,7 +106,7 @@
 			<div class="h-[200px] bg-gray-100 flex px-4 py-1 gap-6">
 				<div class="w-[100%] overflow-auto">
 					{#if selectedValue.key !== REPLY_QUALITY_ANALYSIS}
-						<Chips on:change={(event) => (tags = event.detail)} {tags} label="Text" />
+						<Chips on:change={(event) => (tags = event.detail)} chips={tags} label="Text" />
 					{:else}
 						<ReplyQualityForm on:submit={(event) => handleReplyQualityFormSubmit(event.detail)} />
 					{/if}

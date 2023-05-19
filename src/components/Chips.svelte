@@ -8,21 +8,19 @@
     export let label = "";
 	let inputText = '';
 
-	
-    $: {
-        dispatch("change", chips)
-    }
 
 	function addChip(event) {
 		if (inputText.trim() !== '' && event.key === "Enter" && !chips.includes(inputText)) {
 			chips = [...chips, inputText.trim()];
 			inputText = '';
+			dispatch("change", chips)
 		}
 	}
 
 	function removeChip(index) {
 		chips.splice(index, 1);
         chips = chips
+		dispatch("change", chips)
 	}
 </script>
 
